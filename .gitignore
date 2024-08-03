@@ -11,6 +11,11 @@
 .vscode/
 .vs/
 
+
+
+#.NET Properties
+HealthCare/appsettings.Development.json
+HealthCare/appsettings.json
 # Mono Auto Generated Files
 mono_crash.*
 
