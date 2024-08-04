@@ -58,6 +58,9 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 // Configure JWT authentication
 builder.Services.Configure<AuthSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddTransient<TokenService>();
+builder.Services.AddTransient<RoleService>();
+builder.Services.AddHostedService<StartupRolesInitializer>();
+
 
 builder.Services.Configure<WhatsAppSettings>(builder.Configuration.GetSection("WhatsAppSettings"));
 builder.Services.AddSingleton<MessageService>();

@@ -20,15 +20,10 @@ namespace HealthCare.Services
             _authSettings = authSettings.Value;
         }
 
-        public string GenerateToken(AppUser user)
+        public string GenerateToken(AppUser user , List<Claim> claims)
             {
 
-                var claims = new[]
-                {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email)
-            };
-
+              
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authSettings.Key));
                 var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
