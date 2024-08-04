@@ -8,11 +8,11 @@
     {
         public interface IAppUserRepository
         {
-            Task<AppUser> GetAppUserById(int id);
+            Task<AppUser> GetAppUserById(long id);
             Task<IEnumerable<AppUser>> GetAllAppUsers();
             Task AddAppUser(AppUser appUser);
             Task UpdateAppUser(AppUser appUser);
-            Task DeleteAppUser(int id);
+            Task DeleteAppUser(long id);
         }
 
         public class AppUserRepository : IAppUserRepository
@@ -24,7 +24,7 @@
                 _context = context;
             }
 
-            public async Task<AppUser> GetAppUserById(int id)
+            public async Task<AppUser> GetAppUserById(long id)
             {
                 var result = await _context.AppUsers.FindAsync(id);
                 return result ?? throw new Exception("AppUser Not Found");
@@ -47,7 +47,7 @@
                 await _context.SaveChangesAsync();
             }
 
-            public async Task DeleteAppUser(int id)
+            public async Task DeleteAppUser(long id)
             {
                 var appUser = await _context.AppUsers.FindAsync(id);
                 if (appUser == null)

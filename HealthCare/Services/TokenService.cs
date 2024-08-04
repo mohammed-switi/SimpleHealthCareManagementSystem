@@ -1,31 +1,36 @@
-﻿    using HealthCare.Dtos;
-    using HealthCare.Models;
+﻿using HealthCare.Dtos;
+using HealthCare.Models;
 using Microsoft.IdentityModel.Tokens;
-    using System.IdentityModel.Tokens.Jwt;
-    using System.Security.Claims;
-    using System.Text;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using Microsoft.Extensions.Options;
+using HealthCare.Repositories;
 
 namespace HealthCare.Services
 {
 
-        public class TokenService
+    public class TokenService
         {
             private readonly AuthSettings _authSettings;
+        private readonly AppUserRepository _appUserRepository;
 
         public TokenService(IOptions<AuthSettings> authSettings)
         {
             _authSettings = authSettings.Value;
         }
 
-        public string GenerateToken(AppUserDTO user)
+        public string GenerateToken(long id)
             {
+
+            AppUser user = _appUserRepository.GetAppUserById(id).Result;
+                
                 var claims = new[]
                 {
-                new Claim(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
-                new Claim(JwtRegisteredClaimNames.GivenName, user.FirstName),
-                new Claim(JwtRegisteredClaimNames.FamilyName, user.LastName),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email)
+                new Claim(JwtRegisteredClaimNames.Sub, user.userId.ToString()),
+                new Claim(JwtRegisteredClaimNames.GivenName, user.firstName),
+                new Claim(JwtRegisteredClaimNames.FamilyName, user.lastName),
+                new Claim(JwtRegisteredClaimNames.Email, user.email)
             };
 
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authSettings.Key));

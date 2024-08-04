@@ -1,4 +1,5 @@
 using HealthCare.Configuration;
+using HealthCare.Dtos;
 using HealthCare.Mapping;
 using HealthCare.Models;
 using HealthCare.Repositories;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 using System;
 using System.Reflection;
 using System.Text;
@@ -31,6 +33,10 @@ builder.Services.AddDbContext<HealthcaredbContext>(options =>
 {
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString));
 });
+
+//builder.Services.AddIdentity<AppUser, IdentityRole>()
+//    .AddEntityFrameworkStores<HealthcaredbContext>()
+//    .AddDefaultTokenProviders();
 
 // Register repositories
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
@@ -68,32 +74,44 @@ builder.Services.AddAuthentication(options =>
 // Swagger configuration with JWT support
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new() { Title = "JwtAuthDemo", Version = "v1" });
+c.SwaggerDoc("v1", new() { Title = "JwtAuthDemo", Version = "v1" });
 
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Description = "JWT Authorization header using the Bearer scheme. Example: 'Bearer {token}'",
-        Name = "Authorization",
-        In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
-    });
-
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            new string[] {}
-        }
-    });
+c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+{
+    Description = "JWT Authorization header using the Bearer scheme. Example: 'Bearer {token}'",
+    Name = "Authorization",
+    In = ParameterLocation.Header,
+    Type = SecuritySchemeType.ApiKey,
+    Scheme = "Bearer"
 });
+
+c.AddSecurityRequirement(new OpenApiSecurityRequirement
+{
+    {
+        new OpenApiSecurityScheme
+        {
+            Reference = new OpenApiReference
+            {
+                Type = ReferenceType.SecurityScheme,
+                Id = "Bearer"
+            }
+        },
+        new string[] { }
+    }
+});
+
+c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+{
+    In = ParameterLocation.Header,
+    Name = "Authorization",
+    Type = SecuritySchemeType.ApiKey,
+});
+c.OperationFilter<SecurityRequirementsOperationFilter>();
+});
+
+builder.Services.AddAuthorization();
+builder.Services.AddIdentityApiEndpoints<IdentityUser>()
+    .AddEntityFrameworkStores<HealthcaredbContext>();
 
 var app = builder.Build();
 
@@ -102,7 +120,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.MapIdentityApi<IdentityUser>();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
