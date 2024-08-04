@@ -138,7 +138,7 @@ builder.Services.AddAuthentication(options =>
         },
         OnForbidden = context =>
         {
-            var message = "You do not have the access to this resource.";
+            var message = "You do not have  access to this resource.";
             Log.Warning("Forbidden access attempt to: {Path}, Message : {message}", context.HttpContext.Request.Path,message);
             return Task.CompletedTask;
         }
