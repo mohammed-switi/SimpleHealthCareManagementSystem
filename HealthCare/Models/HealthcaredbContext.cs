@@ -24,6 +24,9 @@ namespace HealthCare.Models
         public virtual DbSet<Test> Tests { get; set; }
         public virtual DbSet<Visit> Visits { get; set; }
         public virtual DbSet<AppUser> AppUsers { get; set; }
+        public DbSet<LogEntry> LogEntries { get; set; }
+
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

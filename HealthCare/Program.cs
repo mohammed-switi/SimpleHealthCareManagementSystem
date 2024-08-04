@@ -4,6 +4,7 @@ using HealthCare.Mapping;
 using HealthCare.Models;
 using HealthCare.Repositories;
 using HealthCare.Services;
+using HealthCare.Logging;  // Add this using statement
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -16,6 +17,8 @@ using System;
 using System.Reflection;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using HealthCare.Middlewares;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +28,9 @@ builder.Configuration
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
     .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
+
+
+
 
 builder.Services.AddControllers(options =>
 {
@@ -55,12 +61,22 @@ builder.Services.AddScoped<IVisitRepository, VisitRepository>();
 // Register AutoMapper with assembly scanning
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.Sink(new EFCoreSink(builder.Services.BuildServiceProvider()))
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
+
 // Configure JWT authentication
 builder.Services.Configure<AuthSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddTransient<TokenService>();
 builder.Services.AddTransient<RoleService>();
 builder.Services.AddHostedService<StartupRolesInitializer>();
-
 
 builder.Services.Configure<WhatsAppSettings>(builder.Configuration.GetSection("WhatsAppSettings"));
 builder.Services.AddSingleton<MessageService>();
@@ -94,32 +110,43 @@ builder.Services.AddAuthentication(options =>
     {
         OnAuthenticationFailed = context =>
         {
-            var logger = builder.Services.BuildServiceProvider().GetRequiredService<ILogger<Program>>();
-            logger.LogError("Authentication failed: {ExceptionMessage}", context.Exception.Message);
+            Log.Error("Authentication failed: {ExceptionMessage}", context.Exception.Message);
             return Task.CompletedTask;
         },
         OnTokenValidated = context =>
         {
-            var logger = builder.Services.BuildServiceProvider().GetRequiredService<ILogger<Program>>();
-            logger.LogInformation("Token validated: {Token}", context.SecurityToken);
+            Log.Information("Token validated: {Token}", context.SecurityToken);
             return Task.CompletedTask;
         },
         OnMessageReceived = context =>
         {
-            var logger = builder.Services.BuildServiceProvider().GetRequiredService<ILogger<Program>>();
-            logger.LogInformation("Token received: {Token}", context.Token);
+            Log.Information("Token received: {Token}", context.Token);
+            return Task.CompletedTask;
+        },
+        OnChallenge = context =>
+        {
+            if (context.AuthenticateFailure != null)
+            {
+                Log.Error("Authentication failed during challenge: {ExceptionMessage}", context.AuthenticateFailure.Message);
+            }
+            else
+            {
+                Log.Warning("Unauthorized access attempt: {Scheme}", context.Scheme.Name);
+            }
             return Task.CompletedTask;
         }
     };
 });
 
 // Logging 
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
-builder.Logging.AddDebug();
-builder.Logging.AddEventSourceLogger();
+//builder.Logging.ClearProviders();
+//builder.Logging.AddConsole();
+//builder.Logging.AddDebug();
+//builder.Logging.AddEventSourceLogger();
 
-builder.Logging.ClearProviders().AddConsole().SetMinimumLevel(LogLevel.Information);
+//// Register the logging filter and the custom database logger provider
+//builder.Services.AddSingleton<Func<LogLevel, bool>>(provider => logLevel => logLevel >= LogLevel.Information);
+//builder.Services.AddSingleton<ILoggerProvider, DatabaseLoggerProvider>();
 
 // Swagger configuration with JWT support
 builder.Services.AddSwaggerGen(c =>
@@ -167,6 +194,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<LoggingMiddleware>();
+
 app.MapControllers();
 
 app.Run();
