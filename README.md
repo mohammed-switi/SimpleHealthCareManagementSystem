@@ -126,7 +126,7 @@ For any inquiries or support, please contact:
 - **Email:** mosowity@gmail.com
 - **GitHub:** [USERNAME](https://github.com/mohammed-switi)
 
-```
+
 
 ### Summary
 
