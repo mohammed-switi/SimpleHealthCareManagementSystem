@@ -19,6 +19,7 @@ using System.Text;
 using Microsoft.Extensions.Logging;
 using HealthCare.Middlewares;
 using Serilog;
+using HealthCare.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -134,6 +135,11 @@ builder.Services.AddAuthentication(options =>
                 Log.Warning("Unauthorized access attempt: {Scheme}", context.Scheme.Name);
             }
             return Task.CompletedTask;
+        },
+        OnForbidden = context =>
+        {
+            Log.Warning("Forbidden access attempt to: {Path}", context.HttpContext.Request.Path);
+            return Task.CompletedTask;
         }
     };
 });
@@ -194,6 +200,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 app.UseMiddleware<LoggingMiddleware>();
 
 app.MapControllers();
