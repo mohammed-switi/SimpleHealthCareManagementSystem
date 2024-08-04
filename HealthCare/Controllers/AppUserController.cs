@@ -23,7 +23,8 @@ namespace HealthCare.Controllers
         }
 
         // GET: api/AppUser
-        [HttpGet,Authorize(Roles = "Administrator")]
+        [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<AppUserDTO>>> GetAppUsers()
         {
             var appUsers = await _appUserRepository.GetAllAppUsers();

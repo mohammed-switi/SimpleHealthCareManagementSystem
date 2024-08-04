@@ -3,8 +3,8 @@
     public class LoginDto
     {
 
-        public String email { get; set; } = String.Empty;
+        public String Email { get; set; } = String.Empty;
 
-        public String password { get; set; } = String.Empty;
+        public String Password { get; set; } = String.Empty;
     }
 }

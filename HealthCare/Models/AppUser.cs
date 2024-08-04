@@ -16,7 +16,6 @@ namespace HealthCare.Models
         public string? lastName { get; set; }
 
 
-        public string? UserEmail { get; set; }
 
         public  byte[]? PasswordHashed { get; set; }
 

@@ -20,17 +20,13 @@ namespace HealthCare.Services
             _authSettings = authSettings.Value;
         }
 
-        public string GenerateToken(long id)
+        public string GenerateToken(AppUser user)
             {
 
-            AppUser user = _appUserRepository.GetAppUserById(id).Result;
-                
                 var claims = new[]
                 {
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.GivenName, user.firstName),
-                new Claim(JwtRegisteredClaimNames.FamilyName, user.lastName),
-                new Claim(JwtRegisteredClaimNames.Email, user.UserEmail)
+                new Claim(JwtRegisteredClaimNames.Email, user.Email)
             };
 
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authSettings.Key));
