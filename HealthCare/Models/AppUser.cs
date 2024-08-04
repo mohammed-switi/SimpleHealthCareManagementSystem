@@ -1,20 +1,29 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HealthCare.Models
 {
-    public class AppUser
+    public class AppUser : IdentityUser<int>
     {
 
 
-        [Key]
-        public int userId { get; set; }
 
-        public string firstName { get; set; }
-        public string lastName { get; set; }
-        public string email { get; set; }
-        public string password { get; set; }
 
-        public string phone { get; set; }
+        public string? firstName { get; set; }
+        
+
+        public string? lastName { get; set; }
+
+
+        public string? UserEmail { get; set; }
+
+        public  byte[]? PasswordHashed { get; set; }
+
+        public byte[]? PasswordSalt { get; set; }
+
+
+        public string? phone { get; set; }
 
 
     }

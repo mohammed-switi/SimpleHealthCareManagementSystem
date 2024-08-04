@@ -4,6 +4,7 @@ using HealthCare.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HealthCare.Migrations
 {
     [DbContext(typeof(HealthcaredbContext))]
-    partial class HealthcaredbContextModelSnapshot : ModelSnapshot
+    [Migration("20240804015221_second")]
+    partial class second
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,13 +63,12 @@ namespace HealthCare.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("varchar(256)");
 
-                    b.Property<string>("PasswordHash")
-                        .HasColumnType("longtext");
-
-                    b.Property<byte[]>("PasswordHashed")
+                    b.Property<byte[]>("PasswordHash")
+                        .IsRequired()
                         .HasColumnType("longblob");
 
                     b.Property<byte[]>("PasswordSalt")
+                        .IsRequired()
                         .HasColumnType("longblob");
 
                     b.Property<string>("PhoneNumber")
@@ -82,6 +84,7 @@ namespace HealthCare.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<string>("UserEmail")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("UserName")
@@ -89,12 +92,15 @@ namespace HealthCare.Migrations
                         .HasColumnType("varchar(256)");
 
                     b.Property<string>("firstName")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("lastName")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<string>("phone")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");

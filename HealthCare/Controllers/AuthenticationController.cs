@@ -26,13 +26,14 @@ namespace HealthCare.Controllers
         [HttpPost("signup")]
         public async Task <IActionResult> Signup([FromBody] SignupDto signupDto)
         {
-
+            _tokenService.CreatePasswordHash(signupDto.password, out byte[] passwordHash, out byte[] passwordSalt);
             AppUser user = new AppUser()
             {
                 firstName = signupDto.FirstName,
                 lastName = signupDto.LastName,
-                email = signupDto.Email,
-                password = BCrypt.Net.BCrypt.HashPassword(signupDto.password),
+                UserEmail = signupDto.Email,
+                PasswordHashed = passwordHash,
+                PasswordSalt = passwordSalt,
                 phone = signupDto.Phone
 
             };

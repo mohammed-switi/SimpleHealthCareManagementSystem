@@ -110,17 +110,19 @@ c.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
 builder.Services.AddAuthorization();
-builder.Services.AddIdentityApiEndpoints<IdentityUser>()
+builder.Services.AddIdentityApiEndpoints<AppUser>()
     .AddEntityFrameworkStores<HealthcaredbContext>();
 
 var app = builder.Build();
+
+
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.MapIdentityApi<IdentityUser>();
+app.MapIdentityApi<AppUser>();
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

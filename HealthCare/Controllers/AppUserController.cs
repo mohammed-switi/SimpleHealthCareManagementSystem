@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using HealthCare.Dtos;
+using Microsoft.AspNetCore.Authorization;
 
 namespace HealthCare.Controllers
 {
@@ -22,7 +23,7 @@ namespace HealthCare.Controllers
         }
 
         // GET: api/AppUser
-        [HttpGet]
+        [HttpGet,Authorize(Roles = "Administrator")]
         public async Task<ActionResult<IEnumerable<AppUserDTO>>> GetAppUsers()
         {
             var appUsers = await _appUserRepository.GetAllAppUsers();
@@ -52,7 +53,7 @@ namespace HealthCare.Controllers
         {
             var appUser = _mapper.Map<AppUser>(appUserDTO);
             await _appUserRepository.AddAppUser(appUser);
-            return CreatedAtAction(nameof(GetAppUser), new { id = appUser.userId }, appUserDTO);
+            return CreatedAtAction(nameof(GetAppUser), new { id = appUser.Id }, appUserDTO);
         }
 
         // PUT: api/AppUser/5

@@ -6,7 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Options;
 using HealthCare.Repositories;
-
+using System.Security.Cryptography;
 namespace HealthCare.Services
 {
 
@@ -27,10 +27,10 @@ namespace HealthCare.Services
                 
                 var claims = new[]
                 {
-                new Claim(JwtRegisteredClaimNames.Sub, user.userId.ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.GivenName, user.firstName),
                 new Claim(JwtRegisteredClaimNames.FamilyName, user.lastName),
-                new Claim(JwtRegisteredClaimNames.Email, user.email)
+                new Claim(JwtRegisteredClaimNames.Email, user.UserEmail)
             };
 
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_authSettings.Key));
@@ -45,5 +45,23 @@ namespace HealthCare.Services
 
                 return new JwtSecurityTokenHandler().WriteToken(token);
             }
+
+        public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        {
+            using (var hmac = new HMACSHA512())
+            {
+                passwordSalt = hmac.Key;
+                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            }
         }
+
+        public bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+        {
+            using (var hmac = new HMACSHA512(passwordSalt))
+            {
+                var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+                return computedHash.SequenceEqual(passwordHash);
+            }
+        }
+    }
     }

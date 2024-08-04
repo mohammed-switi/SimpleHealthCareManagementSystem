@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace HealthCare.Models;
 
 public partial class Visit
 {
+
+    [Key]
+
     public int VisitId { get; set; }
 
     public int? PtId { get; set; }

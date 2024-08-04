@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace HealthCare.Models;
 
 public partial class Doctor
 {
+    [Key]
+
     public int DoctorId { get; set; }
 
     public int? DpId { get; set; }
