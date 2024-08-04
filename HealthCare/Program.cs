@@ -85,21 +85,6 @@ c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     Scheme = "Bearer"
 });
 
-c.AddSecurityRequirement(new OpenApiSecurityRequirement
-{
-    {
-        new OpenApiSecurityScheme
-        {
-            Reference = new OpenApiReference
-            {
-                Type = ReferenceType.SecurityScheme,
-                Id = "Bearer"
-            }
-        },
-        new string[] { }
-    }
-});
-
 c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
 {
     In = ParameterLocation.Header,
