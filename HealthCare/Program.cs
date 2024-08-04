@@ -124,7 +124,7 @@ builder.Logging.ClearProviders().AddConsole().SetMinimumLevel(LogLevel.Informati
 // Swagger configuration with JWT support
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new() { Title = "JwtAuthDemo", Version = "v1" });
+    c.SwaggerDoc("v1", new() { Title = "Basic .NET Health Care Application System", Version = "v1" });
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "JWT Authorization header using the Bearer scheme. Example: 'Bearer {token}'",

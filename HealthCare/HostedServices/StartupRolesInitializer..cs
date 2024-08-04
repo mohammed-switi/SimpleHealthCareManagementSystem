@@ -8,10 +8,12 @@ using Microsoft.AspNetCore.Identity;
 public class StartupRolesInitializer : IHostedService
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly IConfiguration _configuration;
 
-    public StartupRolesInitializer(IServiceProvider serviceProvider)
+    public StartupRolesInitializer(IServiceProvider serviceProvider, IConfiguration configuration)
     {
         _serviceProvider = serviceProvider;
+        _configuration = configuration;
     }
 
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -25,8 +27,8 @@ public class StartupRolesInitializer : IHostedService
             await roleService.CreateRoleIfNotExists("Admin");
             await roleService.CreateRoleIfNotExists("User");
 
-            var adminEmail = "Sowaity@example.com";
-            var adminPassword = "Sowaity123!";
+            var adminEmail = _configuration["AdminUser:Email"];
+            var adminPassword = _configuration["AdminUser:Password"];
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
             if (adminUser == null)
             {

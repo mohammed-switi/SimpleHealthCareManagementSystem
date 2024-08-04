@@ -11,6 +11,7 @@ namespace HealthCare.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+
     public class AppUserController : ControllerBase
     {
         private readonly IAppUserRepository _appUserRepository;
@@ -24,7 +25,7 @@ namespace HealthCare.Controllers
 
         // GET: api/AppUser
         [HttpGet]
-        [Authorize]
+        [Authorize(Policy ="AdminOnly")]
         public async Task<ActionResult<IEnumerable<AppUserDTO>>> GetAppUsers()
         {
             var appUsers = await _appUserRepository.GetAllAppUsers();
@@ -80,6 +81,7 @@ namespace HealthCare.Controllers
 
         // DELETE: api/AppUser/5
         [HttpDelete("{id}")]
+        [Authorize(Policy ="AdminOnly")]
         public async Task<ActionResult> DeleteAppUser(int id)
         {
             try
