@@ -10,6 +10,7 @@ A simple, yet powerful healthcare management system built using .NET Core, Entit
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
+  - [Configuration](#configuration)
   - [Running the Application](#running-the-application)
 - [Usage](#usage)
   - [API Endpoints](#api-endpoints)
@@ -67,6 +68,41 @@ A simple, yet powerful healthcare management system built using .NET Core, Entit
    dotnet ef database update
    ```
 
+### Configuration
+
+Configure the `appsettings.Development.json` file with the necessary settings:
+
+1. **Logging**: Set the appropriate log levels for your application.
+2. **JWT Settings**: Configure the key, issuer, and audience for JWT authentication.
+3. **WhatsApp Settings**: Add the access token for WhatsApp integration.
+4. **Admin User**: Define the admin user's email and password.
+
+Here is an example structure for the `appsettings.Development.json` file:
+
+```json
+{
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "JwtSettings": {
+    "Key": "your_jwt_key",
+    "Issuer": "your_issuer",
+    "Audience": "your_audience"
+  },
+  "WhatsAppSettings": {
+    "AccessToken": "your_whatsapp_access_token"
+  },
+  "AdminUser": {
+    "Email": "your_admin_email",
+    "Password": "your_admin_password"
+  }
+}
+```
+
+
 ### Running the Application
 
 1. Build and run the application:
@@ -76,6 +112,7 @@ A simple, yet powerful healthcare management system built using .NET Core, Entit
    ```
 
 2. Open your browser and navigate to `https://localhost:5001/swagger` to access the Swagger UI.
+
 
 ## Usage
 
