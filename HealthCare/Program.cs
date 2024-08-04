@@ -138,7 +138,8 @@ builder.Services.AddAuthentication(options =>
         },
         OnForbidden = context =>
         {
-            Log.Warning("Forbidden access attempt to: {Path}", context.HttpContext.Request.Path);
+            var message = "You do not have access to this resource.";
+            Log.Warning("Forbidden access attempt to: {Path}, Message : {message}", context.HttpContext.Request.Path,message);
             return Task.CompletedTask;
         }
     };
@@ -201,7 +202,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
-
+app.UseMiddleware<AuthorizationLoggingMiddleware>();
 app.UseMiddleware<LoggingMiddleware>();
 
 app.MapControllers();
