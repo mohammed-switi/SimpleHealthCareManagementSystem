@@ -4,7 +4,7 @@ using HealthCare.Mapping;
 using HealthCare.Models;
 using HealthCare.Repositories;
 using HealthCare.Services;
-using HealthCare.Logging;  // Add this using statement
+using HealthCare.Logging;  
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -53,7 +53,7 @@ builder.Services.AddDbContext<HealthcaredbContext>(options =>
 
 // Register repositories
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
-builder.Services.AddScoped<IAppUserRepository, AppUserRepository>(); // Example for other repositories
+builder.Services.AddScoped<IAppUserRepository, AppUserRepository>(); 
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<ITestRepository, TestRepository>();
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
@@ -145,15 +145,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// Logging 
-//builder.Logging.ClearProviders();
-//builder.Logging.AddConsole();
-//builder.Logging.AddDebug();
-//builder.Logging.AddEventSourceLogger();
 
-//// Register the logging filter and the custom database logger provider
-//builder.Services.AddSingleton<Func<LogLevel, bool>>(provider => logLevel => logLevel >= LogLevel.Information);
-//builder.Services.AddSingleton<ILoggerProvider, DatabaseLoggerProvider>();
 
 // Swagger configuration with JWT support
 builder.Services.AddSwaggerGen(c =>
