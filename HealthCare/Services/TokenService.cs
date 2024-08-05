@@ -31,7 +31,7 @@ namespace HealthCare.Services
                     issuer: _authSettings.Issuer,
                     audience: _authSettings.Audience,
                     claims: claims,
-                    expires: DateTime.Now.AddHours(1),
+                    expires: DateTime.Now.AddHours(24),
                     signingCredentials: creds);
 
                 return new JwtSecurityTokenHandler().WriteToken(token);

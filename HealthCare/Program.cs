@@ -20,6 +20,9 @@ using Microsoft.Extensions.Logging;
 using HealthCare.Middlewares;
 using Serilog;
 using HealthCare.Exceptions;
+using SoapCore;
+using Refit;
+using Serilog.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -89,13 +92,17 @@ builder.Services.AddIdentity<AppUser, IdentityRole<int>>()
     .AddApiEndpoints(); // Ensure other endpoints are available
 
 // Add JWT Bearer authentication
+
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(options =>
 {
+
     var authSettings = builder.Configuration.GetSection("JwtSettings").Get<AuthSettings>();
+
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
@@ -174,6 +181,7 @@ builder.Services.AddSwaggerGen(c =>
             new string[] {}
         }
     });
+
 });
 
 builder.Services.AddAuthorization(options =>
@@ -181,6 +189,29 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
     options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
 });
+
+// Refit Configuration
+
+var whatsappSettings = builder.Configuration.GetSection("WhatsAppSettings").Get<WhatsAppSettings>();
+
+var refitSettings = new RefitSettings
+
+{
+    AuthorizationHeaderValueGetter = (rq, rc) => Task.FromResult(whatsappSettings.AccessToken),
+   HttpMessageHandlerFactory = () => new HttpClientHandler
+   {
+       ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+   }
+};
+builder.Services.AddTransient<SerilogLoggingHandler>();
+builder.Services
+       .AddRefitClient<IWhatsAppApi>(refitSettings)
+       .ConfigureHttpClient(c => c.BaseAddress = new Uri("https://graph.facebook.com"))
+         .AddHttpMessageHandler<SerilogLoggingHandler>();
+
+// SOAP CONIFGURATION
+builder.Services.AddSoapCore();
+builder.Services.AddScoped<ISoapService, SoapService>();
 
 var app = builder.Build();
 
@@ -190,13 +221,20 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
+app.UseRouting();
+
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseMiddleware<AuthorizationLoggingMiddleware>();
-app.UseMiddleware<LoggingMiddleware>();
+//app.UseMiddleware<LoggingMiddleware>();
+app.UseMiddleware<RequestResponseLoggingMiddleware>();
 
+
+
+((IApplicationBuilder)app).UseSoapEndpoint<ISoapService>("/service.asmx", new SoapEncoderOptions(), SoapSerializer.XmlSerializer);
 app.MapControllers();
 
 app.Run();
